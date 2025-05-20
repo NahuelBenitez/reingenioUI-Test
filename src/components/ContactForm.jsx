@@ -13,15 +13,18 @@ import {
   Input,
   VStack,
   Select,
+  useToast,
 } from '@chakra-ui/react'
 
-const ContactForm = ({ isOpen, onClose, onSubmit, initialData = {} }) => {
+const ContactForm = ({ isOpen, onClose, onSubmit, initialData = {}, provinces = [] }) => {
   const [formData, setFormData] = useState({
     nombre: initialData.nombre || '',
     apellido: initialData.apellido || '',
     provincia: initialData.provincia || '',
     telefono: initialData.telefono || '',
+    id: initialData.id || null
   })
+  const toast = useToast()
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -30,8 +33,20 @@ const ContactForm = ({ isOpen, onClose, onSubmit, initialData = {} }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
+    
+    // Validación básica
+    if (!formData.nombre || !formData.apellido || !formData.provincia || !formData.telefono) {
+      toast({
+        title: 'Error',
+        description: 'Todos los campos son obligatorios',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      })
+      return
+    }
+    
     onSubmit(formData)
-    onClose()
   }
 
   return (
@@ -44,25 +59,46 @@ const ContactForm = ({ isOpen, onClose, onSubmit, initialData = {} }) => {
           <VStack spacing={4}>
             <FormControl isRequired>
               <FormLabel>Nombre</FormLabel>
-              <Input name="nombre" value={formData.nombre} onChange={handleChange} />
+              <Input 
+                name="nombre" 
+                value={formData.nombre} 
+                onChange={handleChange} 
+                placeholder="Ej: Juan"
+              />
             </FormControl>
             <FormControl isRequired>
               <FormLabel>Apellido</FormLabel>
-              <Input name="apellido" value={formData.apellido} onChange={handleChange} />
+              <Input 
+                name="apellido" 
+                value={formData.apellido} 
+                onChange={handleChange} 
+                placeholder="Ej: Pérez"
+              />
             </FormControl>
             <FormControl isRequired>
               <FormLabel>Provincia</FormLabel>
-              <Select name="provincia" value={formData.provincia} onChange={handleChange} placeholder="Selecciona una provincia">
-                <option value="Buenos Aires">Buenos Aires</option>
-                <option value="Córdoba">Córdoba</option>
-                <option value="Santa Fe">Santa Fe</option>
-                <option value="Mendoza">Mendoza</option>
-                <option value="Tucumán">Tucumán</option>
-              </Select>
+                <Select 
+        name="provincia" 
+        value={formData.provincia} 
+        onChange={handleChange} 
+        placeholder="Selecciona una provincia"
+      >
+        {provinces.map(province => (
+          <option key={province.id} value={province.name}>
+            {province.name}
+          </option>
+        ))}
+      </Select>
             </FormControl>
             <FormControl isRequired>
               <FormLabel>Teléfono</FormLabel>
-              <Input name="telefono" type="tel" value={formData.telefono} onChange={handleChange} />
+              <Input 
+                name="telefono" 
+                type="tel" 
+                value={formData.telefono} 
+                onChange={handleChange}
+                placeholder="Ej: 3515551234"
+              />
             </FormControl>
           </VStack>
         </ModalBody>

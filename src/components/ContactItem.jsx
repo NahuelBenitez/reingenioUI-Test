@@ -2,11 +2,12 @@ import { Box, Text, Flex, IconButton, useDisclosure } from '@chakra-ui/react'
 import { EditIcon, DeleteIcon } from '@chakra-ui/icons'
 import ContactForm from './ContactForm'
 
-const ContactItem = ({ contact, onEdit, onDelete }) => {
+const ContactItem = ({ contact, onEdit, onDelete, provinces })=> {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   const handleEdit = (updatedContact) => {
     onEdit({ ...updatedContact, id: contact.id })
+    onClose() // Cerrar el modal después de enviar los datos
   }
 
   return (
@@ -14,9 +15,9 @@ const ContactItem = ({ contact, onEdit, onDelete }) => {
       <Box p={4} borderWidth="1px" borderRadius="lg" mb={2}>
         <Flex justifyContent="space-between" alignItems="center">
           <Box>
-            <Text fontWeight="bold">{contact.nombre} {contact.apellido}</Text>
-            <Text>{contact.provincia}</Text>
-            <Text>{contact.telefono}</Text>
+            <Text fontWeight="bold">{contact.firstName || contact.nombre} {contact.lastName || contact.apellido}</Text>
+            <Text>{contact.province?.name || contact.provincia}</Text>
+            <Text>{contact.phone || contact.telefono}</Text>
           </Box>
           <Box>
             <IconButton
@@ -36,11 +37,18 @@ const ContactItem = ({ contact, onEdit, onDelete }) => {
       </Box>
       
       <ContactForm 
-        isOpen={isOpen} 
-        onClose={onClose} 
-        onSubmit={handleEdit}
-        initialData={contact}
-      />
+  isOpen={isOpen} 
+  onClose={onClose} 
+  onSubmit={handleEdit}
+  initialData={{
+    nombre: contact.firstName || contact.nombre,
+    apellido: contact.lastName || contact.apellido,
+    provincia: contact.province?.name || contact.provincia,
+    telefono: contact.phone || contact.telefono,
+    id: contact.id
+  }}
+  provinces={provinces}
+/>
     </>
   )
 }

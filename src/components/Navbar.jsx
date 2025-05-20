@@ -26,8 +26,9 @@ import {
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 
-const MotionBox = motion(Box);
-const MotionButton = motion(Button);
+// Actualización: usando motion.create() en lugar de motion()
+const MotionBox = motion.create(Box);
+const MotionButton = motion.create(Button);
 
 const Navbar = ({ onOpen }) => {
   const [isHovered, setIsHovered] = useState(false);
